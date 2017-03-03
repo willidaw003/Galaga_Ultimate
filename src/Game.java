@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -8,10 +9,16 @@ import java.util.LinkedList;
  */
 public class Game extends JPanel implements ActionListener, MouseMotionListener, MouseListener, KeyListener {
 
+    Timer timer;
+    ArrayList<Entity> things;
+    int mouseX, mouseY;
+    boolean upPressed, downPressed, tabPressed, mouseIsClicked;
 
     public static void main(String[] args) {
 
         Game game = new Game();
+        game.init();
+        game.run();
 
     }
 
@@ -32,170 +39,136 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
         frame.setLocationRelativeTo(null);
 
     }
-//
-//    //images
-//    ImageIcon space, shippic, dumbalien, pred, seekpic;
-//
-//    //list of all objects in game
-//    LinkedList<Alien> masterList;
-//
-//    //ship
-//    Ship ship;
-//    Bullet bullet;
-//
-//    int dead, listlength;
-//
-//    public static void GalagaPanel() {
-//        //load images, data, whatever
-//        space = new ImageIcon("data/space.GIF");
-//        shippic = new ImageIcon("data/e23.GIF");
-//        dumbalien = new ImageIcon("data/Alien1.PNG");
-//        pred = new ImageIcon("data/Alien2.PNG");
-//
-//        //add some aliens to game
-//        masterList = new LinkedList<Alien>();
-//        for(int i=0; i<3; i++)
-//        {
-//            Alien a = new Alien();
-//            a.setPicture(dumbalien);
-//            masterList.add(a);
-//        }
-//
-//        CircleAlien ca = new CircleAlien();
-//        ca.setPicture(dumbalien);
-//        masterList.add(ca);
-//
-//        //add a ship to the game
-//        ship = new Ship();
-//        ship.setPicture(shippic);
-//        ship.x = 200;
-//        ship.y = 400;
-//
-//        Predator p1 = new Predator();
-//        p1.setPicture(pred);
-//        p1.setPrey(ship);
-//        masterList.add(p1);
-//
-//        Seeker seek = new Seeker();
-//        seekpic = new ImageIcon("data/Alien4.PNG");
-//        seek.setPicture(seekpic);
-//        seek.setPrey(ship);
-//        masterList.add(seek);
-//
-//        Predator p2 = new Predator();
-//        p2.setPicture(pred);
-//        p2.setPrey(ship);
-//        masterList.add(p2);
-//
-//        bullet = new Bullet();
-//
-//        UpdateThread ut = new UpdateThread(this);
-//        ut.start();
-//
-//
-//        //stupid key listener stuff
-//        addKeyListener(this);
-//        setFocusable(true);
-//    }
-//
-//
-//    public void paintComponent(Graphics g)
-//    {
-//        //clear screen
-//        g.drawImage(space.getImage(),0,0,getWidth(),getHeight(),this);
-//
-//        //draw all objects in game
-//        for( Alien go : masterList )
-//        {
-//            go.draw(g,this);
-//            listlength++;
-//            go.bullet.draw(g, this);
-//            if(!go.alive)
-//                dead++;
-//        }
-//        ship.draw(g, this);
-//        bullet.draw(g, this);
-//        if(ship.alive == false)
-//        {
-//            g.setFont(new Font("sansserif", Font.BOLD, 32));
-//            g.drawString("GAME OVER!!!!", 150, 300);
-//        }
-//        if(dead == listlength)
-//        {
-//            g.setFont(new Font("sansserif", Font.BOLD, 32));
-//            g.drawString("GAME WON!!!!", 150, 300);
-//        }
-//        else
-//        {
-//            listlength = 0;
-//            dead = 0;
-//        }
-//    }
-//
-//
-//    public void update()
-//    {
-//        //update all objects in game
-//        for( Alien go : masterList )
-//        {
-//            go.update();
-//            if(bullet.intersects(go))
-//            {
-//                go.kill();
-//            }
-//
-//            if(go.intersects(ship) && !go.attribute.equalsIgnoreCase("ship"))
-//            {
-//                ship.kill();
-//                System.out.println(go.attribute + " killed you");
-//            }
-//            if(go.bullet.intersects(ship))
-//            {
-//                ship.kill();
-//                System.out.println("Shot by " + go.attribute);
-//            }
-//
-//        }
-//
-//        //check for bullet shot aliens
-//
-//        bullet.update();
-//        ship.update();
-//
-//        repaint();
-//    }
 
-    public void keyPressed(KeyEvent k)
-    {
-        char c = k.getKeyChar();
+    public void init(){
+        things = new ArrayList<>();
+        things.add(new PlayerShip(this,695,375,10,10,3.5,3.5,50,Color.GREEN, "player"));
+        if(mouseIsClicked == true){
+            things.add(new Bullet(this, mouseX, mouseY,
+                    4, 4, .02, .02, 0, Color.RED));
+            things.speed();
 
-        if( k.getKeyCode() == KeyEvent.VK_RIGHT )
-            //ship.dx = 5;
-        if( k.getKeyCode() == KeyEvent.VK_LEFT )
-            //ship.dx = -5;
-        if(c == ' ')
-        {
-            //bullet.x = ship.x;
-            //bullet.y = ship.y - 30;
+        }
+
+
+//        for(int i = 0; i < 8; i++)
+//            things.add(new Invader(this,(int)(25 + (getWidth()-100) * Math.random()),(int)(25 + (getHeight()-100) * Math.random()),
+//                    10,10,.045,.045, 0,Color.CYAN, "enemy"));
+    }
+
+    public void run() {
+
+        timer = new Timer(1000/60,this);
+        timer.start();
+
+    }
+
+    public int collision(Entity e, Entity other, boolean isBattle) {
+
+        if(e.getBounds().intersects(other.getBounds())) {
+
+            if(other instanceof Invader && e.getType().equals("player")) {
+                die();
+            }
+            else if(other instanceof Invader) {
+                if(other.getType().equals("bullet")) {
+
+                }
+
+            }
+            if(isBattle) {
+                if(e.getWidth() > other.getWidth() * 1.2) {
+                    e.setWidth(e.getWidth() + other.getWidth() * .25);
+                    e.setHeight(e.getHeight() + other.getHeight() * .25);
+                    e.setDx(e.getDx() < 0 ? e.getDx() + other.getWidth()*.00007 : e.getDx() - other.getWidth()*.00007);
+                    e.setDy(e.getDy() < 0 ? e.getDy() + other.getWidth()*.00007 : e.getDy() - other.getWidth()*.00007);
+                    e.setSlowDown(e.getSlowDown() + other.getWidth() / 5);
+                    return 1;
+                }
+                else if(other.getWidth() > e.getWidth() * 1.2) {
+                    other.setWidth(other.getWidth() + e.getWidth() * .75);
+                    other.setHeight(other.getHeight() + e.getHeight() * .75);
+                    other.setDx(other.getDx() < 0 ? other.getDx() + e.getWidth()*.00007 : other.getDx() - e.getWidth()*.00007);
+                    other.setDy(other.getDy() < 0 ? other.getDy() + e.getWidth()*.00007 : other.getDy() - e.getWidth()*.00007);
+                    other.setSlowDown(other.getSlowDown() + e.getWidth() / 5);
+                    return 2;
+                }
+                System.out.println("battle");
+            }
+
+        }
+
+        return -1;
+    }
+
+    public void paint(Graphics g) {
+        super.paint(g);
+        for(Entity obj : things) {
+            obj.paint(g);
         }
     }
 
-    public void keyReleased(KeyEvent k)
-    {
-        if( k.getKeyCode() == KeyEvent.VK_LEFT ||  k.getKeyCode() == KeyEvent.VK_RIGHT ) {
-            //ship.dx = 0;
-        }
-    }
+    private void printSimpleString(String s, int width, int XPos, int YPos, Graphics g2d) {
 
+        int stringLen = (int)g2d.getFontMetrics().getStringBounds(s, g2d).getWidth();
+        int start = width/2 - stringLen/2;
+        g2d.drawString(s,start + XPos, YPos);
+
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        things.get(0).playerMove(mouseX, mouseY);
+        boolean iBlob = false, jBlob = false;
+
+        for(int i = 0; i < things.size(); i++) {
+            for(int j = 1; j < things.size(); j++) {
+
+                if(things.get(i).getType().equals("player") || things.get(i).getType().equals("enemy")) iBlob = true;
+                if(things.get(j).getType().equals("player") || things.get(j).getType().equals("enemy")) jBlob = true;
+
+                things.get(j).move();
+                if(things.get(i).collides(things.get(j)) && i != j) {
+
+
+                    if(iBlob && jBlob) {
+                        int delete = collision(things.get(j), things.get(i), true);
+                        if(delete == 1) {
+                            if(things.get(i).getType().equals("lletplayer")) die();
+                            things.remove(i);
+                        }
+                        else if(delete == 2) {
+                            if(things.get(j).getType().equals("player")) die();
+                            things.remove(j);
+                        }
+                    }
+                }
+
+                iBlob = false;
+                jBlob = false;
+
+            }
+
+        }
+        repaint();
+
+    }
+
+    public void die() {
+        JOptionPane.showMessageDialog(this, "You died!");
+        System.exit(0);
+    }
+
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
-
+    public void mouseMoved(MouseEvent e) {
+        mouseX = e.getX() - 3;
+        mouseY = e.getY() - 25;
     }
 
     @Override
@@ -205,31 +178,76 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     @Override
     public void mousePressed(MouseEvent e) {
+    }
+
+    public void mouseReleased(MouseEvent e)  {
+
+        if (e.getButton() == 1) {
+            mouseIsClicked = true;
+        }
 
     }
 
-    @Override
-    public void mouseReleased(MouseEvent e) {
 
-    }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
+    }
+
+
+    @Override
+    public void keyTyped(KeyEvent e) {
 
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {
+    public void keyPressed(KeyEvent e) {
+
+        if(e.getKeyCode() == KeyEvent.VK_UP) {
+            upPressed = true;
+        }
+
+        if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+            downPressed = true;
+        }
+
+        if(e.getKeyCode() == KeyEvent.VK_TAB) {
+            tabPressed = true;
+        }
 
     }
 
     @Override
-    public void mouseMoved(MouseEvent e) {
+    public void keyReleased(KeyEvent e) {
+
+        if(e.getKeyCode() == KeyEvent.VK_UP) {
+            upPressed = false;
+        }
+
+        if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+            downPressed = false;
+        }
+        if(e.getKeyCode() == KeyEvent.VK_TAB) {
+            tabPressed = false;
+        }
 
     }
+
+    public boolean isUpPressed() {
+        return upPressed;
+    }
+
+    public boolean isDownPressed() {
+        return downPressed;
+    }
+
+    public boolean isTabPressed() {
+        return tabPressed;
+    }
+
+
 }
