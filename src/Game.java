@@ -11,6 +11,9 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     Timer timer;
     ArrayList<Entity> things;
+    int PlayerShipX = 695;
+    int PlayerShipY = 720;
+
     int mouseX, mouseY;
     boolean upPressed, downPressed, tabPressed, mouseIsClicked;
 
@@ -35,6 +38,7 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
         addKeyListener(this);
         frame.add(this);
         frame.addMouseMotionListener(this);
+        frame.addMouseListener(this);
         frame.pack();
         frame.setLocationRelativeTo(null);
 
@@ -42,13 +46,8 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     public void init(){
         things = new ArrayList<>();
-        things.add(new PlayerShip(this,695,375,10,10,3.5,3.5,50,Color.GREEN, "player"));
-        if(mouseIsClicked == true){
-            things.add(new Bullet(this, mouseX, mouseY,
-                    4, 4, .02, .02, 0, Color.RED));
-            things.speed();
-
-        }
+        things.add(new PlayerShip(this,PlayerShipX,PlayerShipY ,10,10,20,0,50,Color.GREEN, "player"));
+        things.add(new Invader(this,0,0,50,50,1,0,50,Color.GREEN, "alien"));
 
 
 //        for(int i = 0; i < 8; i++)
@@ -64,48 +63,18 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
     }
 
     public int collision(Entity e, Entity other, boolean isBattle) {
-
-        if(e.getBounds().intersects(other.getBounds())) {
-
-            if(other instanceof Invader && e.getType().equals("player")) {
-                die();
-            }
-            else if(other instanceof Invader) {
-                if(other.getType().equals("bullet")) {
-
-                }
-
-            }
-            if(isBattle) {
-                if(e.getWidth() > other.getWidth() * 1.2) {
-                    e.setWidth(e.getWidth() + other.getWidth() * .25);
-                    e.setHeight(e.getHeight() + other.getHeight() * .25);
-                    e.setDx(e.getDx() < 0 ? e.getDx() + other.getWidth()*.00007 : e.getDx() - other.getWidth()*.00007);
-                    e.setDy(e.getDy() < 0 ? e.getDy() + other.getWidth()*.00007 : e.getDy() - other.getWidth()*.00007);
-                    e.setSlowDown(e.getSlowDown() + other.getWidth() / 5);
-                    return 1;
-                }
-                else if(other.getWidth() > e.getWidth() * 1.2) {
-                    other.setWidth(other.getWidth() + e.getWidth() * .75);
-                    other.setHeight(other.getHeight() + e.getHeight() * .75);
-                    other.setDx(other.getDx() < 0 ? other.getDx() + e.getWidth()*.00007 : other.getDx() - e.getWidth()*.00007);
-                    other.setDy(other.getDy() < 0 ? other.getDy() + e.getWidth()*.00007 : other.getDy() - e.getWidth()*.00007);
-                    other.setSlowDown(other.getSlowDown() + e.getWidth() / 5);
-                    return 2;
-                }
-                System.out.println("battle");
-            }
-
-        }
-
         return -1;
     }
+
+
 
     public void paint(Graphics g) {
         super.paint(g);
         for(Entity obj : things) {
+            //obj.setColor(new Color((int)(100+Math.random()*150),(int)(100+Math.random()*150),(int)(100+Math.random()*150)));
             obj.paint(g);
         }
+        repaint();
     }
 
     private void printSimpleString(String s, int width, int XPos, int YPos, Graphics g2d) {
@@ -119,41 +88,21 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        System.out.println(mouseIsClicked);
+
+//        if(mouseIsClicked == true){
+//            things.add(new Bullet(this, mouseX, PlayerShipY,
+//                    4, 4, 0, -10, 1, Color.RED, "bullet"));
+//
+//        }
+
         things.get(0).playerMove(mouseX, mouseY);
-        boolean iBlob = false, jBlob = false;
-
         for(int i = 0; i < things.size(); i++) {
-            for(int j = 1; j < things.size(); j++) {
-
-                if(things.get(i).getType().equals("player") || things.get(i).getType().equals("enemy")) iBlob = true;
-                if(things.get(j).getType().equals("player") || things.get(j).getType().equals("enemy")) jBlob = true;
-
-                things.get(j).move();
-                if(things.get(i).collides(things.get(j)) && i != j) {
-
-
-                    if(iBlob && jBlob) {
-                        int delete = collision(things.get(j), things.get(i), true);
-                        if(delete == 1) {
-                            if(things.get(i).getType().equals("lletplayer")) die();
-                            things.remove(i);
-                        }
-                        else if(delete == 2) {
-                            if(things.get(j).getType().equals("player")) die();
-                            things.remove(j);
-                        }
-                    }
-                }
-
-                iBlob = false;
-                jBlob = false;
-
+                things.get(i).move(things);
             }
-
+            repaint();
         }
-        repaint();
 
-    }
 
     public void die() {
         JOptionPane.showMessageDialog(this, "You died!");
@@ -173,11 +122,20 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     @Override
     public void mouseClicked(MouseEvent e) {
+//        if (e.getButton() == 1) {
+//            mouseIsClicked = true;
+//            }
+        things.add(new Bullet(this, mouseX, PlayerShipY,
+                4, 4, 0, -10, 1, Color.BLUE, "bullet"));
 
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
+        if (e.getButton() == 1) {
+            mouseIsClicked = true;
+        }
+
     }
 
     public void mouseReleased(MouseEvent e)  {

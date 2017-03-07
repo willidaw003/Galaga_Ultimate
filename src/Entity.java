@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Created by willidaw003 on 3/1/2017.
@@ -37,15 +38,23 @@ public abstract class Entity {
 
     }
 
-    public void move() {
+    public void move(ArrayList<Entity> things) {
 
         double nextTop = y + dy;
         double nextRight = x + dx + width;
         double nextBottom = y + dy + height;
         double nextLeft = x + dx;
 
-        if(nextLeft < 0 || nextRight + width > game.getWidth()) dx *= -1;
-        if(nextTop < 0 || nextBottom + height > game.getHeight()) dy *= -1;
+        if(nextLeft < 0 || nextRight + width > game.getWidth()) {
+            dx *= -1;
+        }
+        if(nextTop < 0 || nextBottom + height > game.getHeight()){
+            for (int i = 0; i < things.size(); i++) {
+                if(things.get(i).getType().equals("bullet")) {
+                    things.remove(i);
+                }
+            }
+        }
 
         x+=dx;
         y+=dy;

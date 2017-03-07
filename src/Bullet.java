@@ -5,8 +5,8 @@ import java.awt.*;
  */
 public class Bullet extends Entity {
 
-    public Bullet(Game game, double x, double y, double width, double height, double dx, double dy, double slowDown, Color color) {
-        super(game, x, y, width, height, dx, dy, slowDown, color, " ");
+    public Bullet(Game game, double x, double y, double width, double height, double dx, double dy, double slowDown, Color color, String bullet) {
+        super(game, x, y, width, height, dx, dy, slowDown, color, "bullet");
     }
 
     @Override
