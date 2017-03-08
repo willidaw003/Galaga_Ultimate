@@ -44,16 +44,17 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     }
 
-    public void init(){
+    public void init() {
         things = new ArrayList<>();
-        things.add(new PlayerShip(this,PlayerShipX,PlayerShipY ,10,10,20,0,50,Color.GREEN, "player"));
-        things.add(new Invader(this,0,0,50,50,1,0,50,Color.GREEN, "alien"));
+        things.add(new PlayerShip(this, PlayerShipX, PlayerShipY, 10, 10, 20, 0, 50, Color.GREEN, "player"));
+            things.add(new Invader(this, 0, 0, 50, 50, 1, 0, 50, Color.GREEN, "alien"));
 
 
 //        for(int i = 0; i < 8; i++)
 //            things.add(new Invader(this,(int)(25 + (getWidth()-100) * Math.random()),(int)(25 + (getHeight()-100) * Math.random()),
 //                    10,10,.045,.045, 0,Color.CYAN, "enemy"));
     }
+
 
     public void run() {
 
@@ -87,19 +88,14 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
-        System.out.println(mouseIsClicked);
-
-//        if(mouseIsClicked == true){
-//            things.add(new Bullet(this, mouseX, PlayerShipY,
-//                    4, 4, 0, -10, 1, Color.RED, "bullet"));
-//
-//        }
-
+       // System.out.println(mouseIsClicked);
         things.get(0).playerMove(mouseX, mouseY);
         for(int i = 0; i < things.size(); i++) {
                 things.get(i).move(things);
             }
+//        for(int i = 0; i < things.size(); i++) {
+//            things.get(i).getType("Invader").enemyMove(things);
+//        }
             repaint();
         }
 
@@ -122,27 +118,16 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     @Override
     public void mouseClicked(MouseEvent e) {
-//        if (e.getButton() == 1) {
-//            mouseIsClicked = true;
-//            }
         things.add(new Bullet(this, mouseX, PlayerShipY,
                 4, 4, 0, -10, 1, Color.BLUE, "bullet"));
-
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (e.getButton() == 1) {
-            mouseIsClicked = true;
-        }
 
     }
 
     public void mouseReleased(MouseEvent e)  {
-
-        if (e.getButton() == 1) {
-            mouseIsClicked = true;
-        }
 
     }
 
@@ -206,6 +191,7 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
     public boolean isTabPressed() {
         return tabPressed;
     }
+
 
 
 }

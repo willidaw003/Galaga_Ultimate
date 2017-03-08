@@ -9,11 +9,11 @@ public abstract class Entity {
 
     //test in html window
     Game game;
-    private double x, y, width, height;
-    private double dx, dy;
-    private Color color;
-    private String type;
-    private double slowDown;
+     double x, y, width, height;
+     double dx, dy;
+     Color color;
+     String type;
+     double slowDown;
 
     public Entity(Game game, double x, double y, double width, double height, double dx, double dy, double slowDown, Color color, String type) {
         this.game = game;
@@ -36,6 +36,18 @@ public abstract class Entity {
         double dx = rx;
         x = x + dx;
 
+    }
+
+    public void enemyMove(ArrayList<Entity> things) {
+            if (this.getX() < 750) {
+                this.dx = -this.dx;
+                this.setY(this.y + 15);
+            }
+
+            if (this.x > 1400) {
+                this.dx = -this.dx;
+                this.setY(this.y + 15);
+            }
     }
 
     public void move(ArrayList<Entity> things) {

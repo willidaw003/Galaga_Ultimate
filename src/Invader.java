@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
@@ -12,9 +13,9 @@ public class Invader extends Entity {
 
     @Override
     public void paint(Graphics g) {
-
         g.setColor(getColor());
-        g.fillRect((int)getX(),(int)getY(),(int)getWidth(),(int)getHeight());
+        //g.drawImage(getGame().alien, getX(),getY(),50,50);
+        g.fillOval((int)getX(),(int)getY(),(int)getWidth(),(int)getHeight());
 
     }
 
