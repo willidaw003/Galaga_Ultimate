@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -39,15 +38,7 @@ public abstract class Entity {
     }
 
     public void enemyMove(ArrayList<Entity> things) {
-            if (this.getX() < 750) {
-                this.dx = -this.dx;
-                this.setY(this.y + 15);
-            }
 
-            if (this.x > 1400) {
-                this.dx = -this.dx;
-                this.setY(this.y + 15);
-            }
     }
 
     public void move(ArrayList<Entity> things) {
@@ -80,11 +71,6 @@ public abstract class Entity {
     }
 
     public abstract void paint(Graphics g);
-
-    public void speed() {
-        double speed = .05 + .07 * Math.random();
-        setDx(speed);
-    }
 
     public Game getGame() {
         return game;

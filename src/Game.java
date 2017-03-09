@@ -11,8 +11,11 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     Timer timer;
     ArrayList<Entity> things;
+    ArrayList<Entity> aliens;
     int PlayerShipX = 695;
     int PlayerShipY = 720;
+    int invaderLocationX = 1;
+    int invaderLocationY = 1;
 
     int mouseX, mouseY;
     boolean upPressed, downPressed, tabPressed, mouseIsClicked;
@@ -47,7 +50,10 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
     public void init() {
         things = new ArrayList<>();
         things.add(new PlayerShip(this, PlayerShipX, PlayerShipY, 10, 10, 20, 0, 50, Color.GREEN, "player"));
-            things.add(new Invader(this, 0, 0, 50, 50, 1, 0, 50, Color.GREEN, "alien"));
+        things.add(new Invader(this, invaderLocationX +50, invaderLocationY+50, 50, 50, 1, 0, 50, Color.GREEN,
+                    "invader"));
+
+
 
 
 //        for(int i = 0; i < 8; i++)
@@ -90,9 +96,10 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
     public void actionPerformed(ActionEvent e) {
        // System.out.println(mouseIsClicked);
         things.get(0).playerMove(mouseX, mouseY);
-        for(int i = 0; i < things.size(); i++) {
+        for (int i = 0; i < things.size(); i++) {
                 things.get(i).move(things);
             }
+
 //        for(int i = 0; i < things.size(); i++) {
 //            things.get(i).getType("Invader").enemyMove(things);
 //        }

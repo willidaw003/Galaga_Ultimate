@@ -8,7 +8,7 @@ import java.util.Random;
 public class Invader extends Entity {
 
     public Invader(Game game, double x, double y, double width, double height, double dx, double dy, double slowDown, Color color, String type) {
-        super(game, x, y, width, height, dx, dy, slowDown, color, type);
+        super(game, x, y, width, height, dx, dy, slowDown, color, "invader");
     }
 
     @Override
