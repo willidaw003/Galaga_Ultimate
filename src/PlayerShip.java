@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Created by willidaw003 on 3/1/2017.
@@ -16,5 +17,6 @@ public class PlayerShip extends Entity{
         g.fillRect((int)getX(),(int)getY(),(int)getWidth(),(int)getHeight());
 
     }
+
 
 }

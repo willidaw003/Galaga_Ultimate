@@ -11,21 +11,15 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     Timer timer;
     ArrayList<Entity> things;
-    ArrayList<Entity> aliens;
     int PlayerShipX = 695;
     int PlayerShipY = 720;
-    int invaderLocationX = 1;
-    int invaderLocationY = 1;
-
     int mouseX, mouseY;
-    boolean upPressed, downPressed, tabPressed, mouseIsClicked;
+    boolean upPressed, downPressed, tabPressed;
 
     public static void main(String[] args) {
-
         Game game = new Game();
         game.init();
         game.run();
-
     }
 
     public Game() {
@@ -44,23 +38,18 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
         frame.addMouseListener(this);
         frame.pack();
         frame.setLocationRelativeTo(null);
-
     }
 
     public void init() {
         things = new ArrayList<>();
         things.add(new PlayerShip(this, PlayerShipX, PlayerShipY, 10, 10, 20, 0, 50, Color.GREEN, "player"));
-        things.add(new Invader(this, invaderLocationX +50, invaderLocationY+50, 50, 50, 1, 0, 50, Color.GREEN,
-                    "invader"));
-
-
-
-
-//        for(int i = 0; i < 8; i++)
-//            things.add(new Invader(this,(int)(25 + (getWidth()-100) * Math.random()),(int)(25 + (getHeight()-100) * Math.random()),
-//                    10,10,.045,.045, 0,Color.CYAN, "enemy"));
+        for(int col = 0; col < 6; col++) {
+            for (int row = 0; row < 6; row++) {
+                things.add(new Invader(this, 5+70*col, 5+70*row, 50, 50, 1, 0, 50, Color.GREEN,
+                        "invader"));
+            }
+        }
     }
-
 
     public void run() {
 
@@ -69,11 +58,42 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     }
 
-    public int collision(Entity e, Entity other, boolean isBattle) {
+    public int collision(Entity e, Entity other) {
+        if(e.getBounds().intersects(other.getBounds())) {
+
+            if(other instanceof Invader && e.getType().equals("player")) {
+                die();
+            }
+
+            if(other instanceof Invader && e.getType().equals("bullet")) {
+                for (int i = 0; i < things.size(); i++) {
+                    if(things.get(i).getType().equals("bullet")) {
+                        things.remove(i);
+                        die();
+                    }
+                }
+            }
+
+            if(e.getWidth() > other.getWidth() * 1.2) {
+                    e.setWidth(e.getWidth() + other.getWidth() * .25);
+                    e.setHeight(e.getHeight() + other.getHeight() * .25);
+                    e.setDx(e.getDx() < 0 ? e.getDx() + other.getWidth()*.00007 : e.getDx() - other.getWidth()*.00007);
+                    e.setDy(e.getDy() < 0 ? e.getDy() + other.getWidth()*.00007 : e.getDy() - other.getWidth()*.00007);
+                    return 1;
+                }
+
+            else if(other.getWidth() > e.getWidth() * 1.2) {
+                    other.setWidth(other.getWidth() + e.getWidth() * .25);
+                    other.setHeight(other.getHeight() + e.getHeight() * .25);
+                    other.setDx(other.getDx() < 0 ? other.getDx() + e.getWidth()*.00007 : other.getDx() - e.getWidth()*.00007);
+                    other.setDy(other.getDy() < 0 ? other.getDy() + e.getWidth()*.00007 : other.getDy() - e.getWidth()*.00007);
+                    return 2;
+                }
+
+        }
+
         return -1;
     }
-
-
 
     public void paint(Graphics g) {
         super.paint(g);
@@ -85,24 +105,17 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
     }
 
     private void printSimpleString(String s, int width, int XPos, int YPos, Graphics g2d) {
-
         int stringLen = (int)g2d.getFontMetrics().getStringBounds(s, g2d).getWidth();
         int start = width/2 - stringLen/2;
         g2d.drawString(s,start + XPos, YPos);
-
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-       // System.out.println(mouseIsClicked);
         things.get(0).playerMove(mouseX, mouseY);
         for (int i = 0; i < things.size(); i++) {
-                things.get(i).move(things);
+                things.get(i).move(things, other);
             }
-
-//        for(int i = 0; i < things.size(); i++) {
-//            things.get(i).getType("Invader").enemyMove(things);
-//        }
             repaint();
         }
 
@@ -114,8 +127,7 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
 
     @Override
-    public void mouseDragged(MouseEvent e) {
-    }
+    public void mouseDragged(MouseEvent e) {}
 
     @Override
     public void mouseMoved(MouseEvent e) {
@@ -130,61 +142,31 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
     }
 
     @Override
-    public void mousePressed(MouseEvent e) {
+    public void mousePressed(MouseEvent e) {}
 
-    }
-
-    public void mouseReleased(MouseEvent e)  {
-
-    }
-
-
+    public void mouseReleased(MouseEvent e)  {}
 
     @Override
-    public void mouseEntered(MouseEvent e) {
-    }
+    public void mouseEntered(MouseEvent e) {}
 
     @Override
-    public void mouseExited(MouseEvent e) {
-    }
-
+    public void mouseExited(MouseEvent e) {}
 
     @Override
-    public void keyTyped(KeyEvent e) {
-
-    }
+    public void keyTyped(KeyEvent e) {}
 
     @Override
     public void keyPressed(KeyEvent e) {
-
-        if(e.getKeyCode() == KeyEvent.VK_UP) {
-            upPressed = true;
-        }
-
-        if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-            downPressed = true;
-        }
-
-        if(e.getKeyCode() == KeyEvent.VK_TAB) {
-            tabPressed = true;
-        }
-
+        if(e.getKeyCode() == KeyEvent.VK_UP) {upPressed = true;}
+        if(e.getKeyCode() == KeyEvent.VK_DOWN) {downPressed = true;}
+        if(e.getKeyCode() == KeyEvent.VK_TAB) {tabPressed = true;}
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-
-        if(e.getKeyCode() == KeyEvent.VK_UP) {
-            upPressed = false;
-        }
-
-        if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-            downPressed = false;
-        }
-        if(e.getKeyCode() == KeyEvent.VK_TAB) {
-            tabPressed = false;
-        }
-
+        if(e.getKeyCode() == KeyEvent.VK_UP) {upPressed = false;}
+        if(e.getKeyCode() == KeyEvent.VK_DOWN) {downPressed = false;}
+        if(e.getKeyCode() == KeyEvent.VK_TAB) {tabPressed = false;}
     }
 
     public boolean isUpPressed() {
@@ -195,10 +177,6 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
         return downPressed;
     }
 
-    public boolean isTabPressed() {
-        return tabPressed;
-    }
-
-
+    public boolean isTabPressed() {return tabPressed;}
 
 }

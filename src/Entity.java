@@ -5,9 +5,7 @@ import java.util.ArrayList;
  * Created by willidaw003 on 3/1/2017.
  */
 public abstract class Entity {
-
-    //test in html window
-    Game game;
+     Game game;
      double x, y, width, height;
      double dx, dy;
      Color color;
@@ -28,40 +26,31 @@ public abstract class Entity {
     }
 
     public void playerMove(int mouseX, int mouseY) {
-
         mouseX -= width/2;
         double rx = mouseX - x;
         double ry = mouseY - y;
         double dx = rx;
         x = x + dx;
-
     }
 
-    public void enemyMove(ArrayList<Entity> things) {
-
-    }
-
-    public void move(ArrayList<Entity> things) {
-
+    public void move(ArrayList<Entity> things,Entity other) {
         double nextTop = y + dy;
         double nextRight = x + dx + width;
         double nextBottom = y + dy + height;
         double nextLeft = x + dx;
-
         if(nextLeft < 0 || nextRight + width > game.getWidth()) {
             dx *= -1;
+            y += 50;
         }
         if(nextTop < 0 || nextBottom + height > game.getHeight()){
             for (int i = 0; i < things.size(); i++) {
-                if(things.get(i).getType().equals("bullet")) {
+                if(other instanceof Bullet /* things.get(i).getType().equals("bullet")*/) {
                     things.remove(i);
                 }
             }
         }
-
         x+=dx;
         y+=dy;
-
     }
 
     public boolean collides(Entity other) { return getBounds().intersects(other.getBounds()); }
