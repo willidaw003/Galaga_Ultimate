@@ -33,7 +33,7 @@ public abstract class Entity {
         x = x + dx;
     }
 
-    public void move(ArrayList<Entity> things,Entity other) {
+    public void move(ArrayList<Entity> things) {
         double nextTop = y + dy;
         double nextRight = x + dx + width;
         double nextBottom = y + dy + height;
@@ -44,7 +44,7 @@ public abstract class Entity {
         }
         if(nextTop < 0 || nextBottom + height > game.getHeight()){
             for (int i = 0; i < things.size(); i++) {
-                if(other instanceof Bullet /* things.get(i).getType().equals("bullet")*/) {
+                if( things.get(i).getType().equals("bullet")) {
                     things.remove(i);
                 }
             }

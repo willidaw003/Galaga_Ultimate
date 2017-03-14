@@ -28,7 +28,7 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setTitle("Agario");
-        setPreferredSize(new Dimension(1400,750));
+        setPreferredSize(new Dimension(1400, 750));
         frame.setResizable(false);
         setBackground(Color.BLACK);
 
@@ -42,10 +42,10 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     public void init() {
         things = new ArrayList<>();
-        things.add(new PlayerShip(this, PlayerShipX, PlayerShipY, 10, 10, 20, 0, 50, Color.GREEN, "player"));
-        for(int col = 0; col < 6; col++) {
+        things.add(new PlayerShip(this, PlayerShipX, PlayerShipY, 25, 25, 20, 0, 50, Color.GREEN, "player"));
+        for (int col = 0; col < 6; col++) {
             for (int row = 0; row < 6; row++) {
-                things.add(new Invader(this, 5+70*col, 5+70*row, 50, 50, 1, 0, 50, Color.GREEN,
+                things.add(new Invader(this, 5 + 70 * col, 5 + 70 * row, 50, 50, 10, 0, 50, Color.GREEN,
                         "invader"));
             }
         }
@@ -53,46 +53,9 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     public void run() {
 
-        timer = new Timer(1000/60,this);
+        timer = new Timer(1000 / 60, this);
         timer.start();
 
-    }
-
-    public int collision(Entity e, Entity other) {
-        if(e.getBounds().intersects(other.getBounds())) {
-
-            if(other instanceof Invader && e.getType().equals("player")) {
-                die();
-            }
-
-            if(other instanceof Invader && e.getType().equals("bullet")) {
-                for (int i = 0; i < things.size(); i++) {
-                    if(things.get(i).getType().equals("bullet")) {
-                        things.remove(i);
-                        die();
-                    }
-                }
-            }
-
-            if(e.getWidth() > other.getWidth() * 1.2) {
-                    e.setWidth(e.getWidth() + other.getWidth() * .25);
-                    e.setHeight(e.getHeight() + other.getHeight() * .25);
-                    e.setDx(e.getDx() < 0 ? e.getDx() + other.getWidth()*.00007 : e.getDx() - other.getWidth()*.00007);
-                    e.setDy(e.getDy() < 0 ? e.getDy() + other.getWidth()*.00007 : e.getDy() - other.getWidth()*.00007);
-                    return 1;
-                }
-
-            else if(other.getWidth() > e.getWidth() * 1.2) {
-                    other.setWidth(other.getWidth() + e.getWidth() * .25);
-                    other.setHeight(other.getHeight() + e.getHeight() * .25);
-                    other.setDx(other.getDx() < 0 ? other.getDx() + e.getWidth()*.00007 : other.getDx() - e.getWidth()*.00007);
-                    other.setDy(other.getDy() < 0 ? other.getDy() + e.getWidth()*.00007 : other.getDy() - e.getWidth()*.00007);
-                    return 2;
-                }
-
-        }
-
-        return -1;
     }
 
     public void paint(Graphics g) {
@@ -113,11 +76,20 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
     @Override
     public void actionPerformed(ActionEvent e) {
         things.get(0).playerMove(mouseX, mouseY);
+        for (int i = 1; i < things.size(); i++) {
+            for(int j = i+1;j < things.size(); j++){
+                if(things.get(i).getBounds().intersects(things.get(j).getBounds())){
+                    if(things.get(i).getType().equals("invader") && things.get(j).getType().equals("bullet")){
+                        things.remove(i);
+                    }
+                }
+            }
+        }
         for (int i = 0; i < things.size(); i++) {
-                things.get(i).move(things, other);
+                things.get(i).move(things);
             }
             repaint();
-        }
+    }
 
 
     public void die() {
@@ -137,8 +109,8 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        things.add(new Bullet(this, mouseX, PlayerShipY,
-                4, 4, 0, -10, 1, Color.BLUE, "bullet"));
+        things.add(new Bullet(this, mouseX, PlayerShipY-10,
+                10, 10, 0, -25, 0, Color.CYAN, "bullet"));
     }
 
     @Override
