@@ -38,19 +38,21 @@ public abstract class Entity {
         double nextRight = x + dx + width;
         double nextBottom = y + dy + height;
         double nextLeft = x + dx;
-        if(nextLeft < 0 || nextRight + width > game.getWidth()) {
-            dx *= -1;
-            y += 50;
-        }
-        if(nextTop < 0 || nextBottom + height > game.getHeight()){
-            for (int i = 0; i < things.size(); i++) {
-                if( things.get(i).getType().equals("bullet")) {
-                    things.remove(i);
+            if (nextLeft < 0 || nextRight + width > game.getWidth()/* && things.get(0).getType().equals("Invader")*/) {
+                dx *= -1;
+                y += 50;
+
+            }
+            for(int i = 0; i < things.size();i++) {
+                if (nextRight + width > game.getWidth() && things.get(i).getType().equals("PlayerShip")) {
+                    this.x = game.getWidth();
                 }
             }
-        }
-        x+=dx;
-        y+=dy;
+            if (nextTop < 0 || nextBottom + height > game.getHeight()) {
+            }
+            x += dx;
+            y += dy;
+
     }
 
     public boolean collides(Entity other) { return getBounds().intersects(other.getBounds()); }

@@ -42,10 +42,10 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     public void init() {
         things = new ArrayList<>();
-        things.add(new PlayerShip(this, PlayerShipX, PlayerShipY, 25, 25, 20, 0, 50, Color.GREEN, "player"));
+        things.add(new PlayerShip(this, mouseX, PlayerShipY, 25, 25, 20, 0, 50, Color.GREEN, "playerShip"));
         for (int col = 0; col < 6; col++) {
             for (int row = 0; row < 6; row++) {
-                things.add(new Invader(this, 5 + 70 * col, 5 + 70 * row, 50, 50, 10, 0, 50, Color.GREEN,
+                things.add(new Invader(this, 5 + 70 * col, 5 + 70 * row, 50, 50, 5, 0, 50, Color.GREEN,
                         "invader"));
             }
         }
@@ -80,7 +80,12 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
             for(int j = i+1;j < things.size(); j++){
                 if(things.get(i).getBounds().intersects(things.get(j).getBounds())){
                     if(things.get(i).getType().equals("invader") && things.get(j).getType().equals("bullet")){
-                        things.remove(i);
+                       things.remove(i);
+                        for (i = 0; i < things.size(); i++) {
+                            if (things.get(i).getType().equals("bullet")) {
+                                 things.remove(i);
+                            }
+                        }
                     }
                 }
             }
@@ -109,7 +114,7 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        things.add(new Bullet(this, mouseX, PlayerShipY-10,
+        things.add(new Bullet(this,e.getX() , PlayerShipY-15,
                 10, 10, 0, -25, 0, Color.CYAN, "bullet"));
     }
 

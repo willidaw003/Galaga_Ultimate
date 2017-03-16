@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class PlayerShip extends Entity{
 
     public PlayerShip(Game game, double x, double y, double width, double height, double dx, double dy, double slowDown, Color color, String type) {
-        super(game, x, y, width, height, dx, dy, slowDown, color, type);
+        super(game, x, y, width, height, dx, dy, slowDown, color, "playerShip");
     }
 
     @Override
