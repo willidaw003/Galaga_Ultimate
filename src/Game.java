@@ -11,6 +11,8 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     Timer timer;
     ArrayList<Entity> things;
+    ArrayList<Entity> player;
+    ArrayList<Entity> bulletBill;
     int PlayerShipY = 720;
     int mouseX, mouseY;
     boolean upPressed, downPressed, tabPressed,firePressed;
@@ -21,12 +23,12 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
         JFrame frame = new JFrame("Galaga!");
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setTitle("Agario");
+        frame.setTitle("Galaga");
         setPreferredSize(new Dimension(1400, 750));
         frame.setResizable(false);
         setBackground(Color.BLACK);
 
-        addKeyListener(this);
+        frame.addKeyListener(this);
         frame.add(this);
         frame.addMouseMotionListener(this);
         frame.addMouseListener(this);
@@ -42,10 +44,12 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     public void init() {
         things = new ArrayList<>();
-        things.add(new PlayerShip(this, mouseX, PlayerShipY, 25, 25, 20, 0, 50, Color.GREEN, "playerShip"));
+        player = new ArrayList<>();
+        bulletBill = new ArrayList<>();
+        player.add(new PlayerShip(this, mouseX, PlayerShipY, 25, 25, 20, 0, 50, Color.GREEN, "playerShip"));
         for (int col = 0; col < 6; col++) {
             for (int row = 0; row < 6; row++) {
-                things.add(new Invader(this, 5 + 70 * col, 5 + 70 * row, 50, 50, 5, 0, 50, Color.GREEN,
+                things.add(new Invader(this, 5 + 70 * col, 5 + 70 * row, 40, 40, 5, 0, 50, Color.GREEN,
                         "invader"));
             }
         }
@@ -56,16 +60,20 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
 
     public void run() {
-
         timer = new Timer(1000 / 60, this);
         timer.start();
-
     }
 
     public void paint(Graphics g) {
         super.paint(g);
+        for(Entity obj : player) {
+            obj.paint(g);
+        }
         for(Entity obj : things) {
             //obj.setColor(new Color((int)(100+Math.random()*150),(int)(100+Math.random()*150),(int)(100+Math.random()*150)));
+            obj.paint(g);
+        }
+        for(Entity obj : bulletBill) {
             obj.paint(g);
         }
         repaint();
@@ -79,27 +87,30 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        things.get(0).playerMove(mouseX, mouseY);
+        player.get(0).playerMove(mouseX, mouseY);
         for (int i = 1; i < things.size(); i++) {
-            for(int j = i+1;j < things.size(); j++){
-                if(things.get(i).getBounds().intersects(things.get(j).getBounds())){
-                    if(things.get(i).getType().equals("invader") && things.get(j).getType().equals("bullet")){
-                       things.remove(i);
-                        for (i = 0; i < things.size(); i++) {
-                            if (things.get(i).getType().equals("bullet")) {
-                                things.remove(i);
-                            }
-                        }
-                    }
+                if (things.get(i).getBounds().intersects(bulletBill.get().getBounds())) {
+                    things.remove(i);
+                    bulletBill.remove(i);
                 }
+        }
+        for (int i = 1; i < things.size(); i++) {
+            if (player.get(0).getBounds().intersects(things.get(i).getBounds())){
+                die();
             }
         }
 
-        System.out.println(firePressed);
+        if(firePressed == true){
+            bulletBill.add(new Bullet(this,mouseX, PlayerShipY-15,
+                    10, 10, 0, -25, 0, Color.CYAN, "bullet"));
+        }
 
         for (int i = 0; i < things.size(); i++) {
                 things.get(i).move(things);
             }
+        for (int i = 0; i < bulletBill.size(); i++) {
+            bulletBill.get(i).move(bulletBill);
+        }
             repaint();
     }
 
@@ -128,8 +139,7 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
     public void mousePressed(MouseEvent e) {}
 
     public void mouseReleased(MouseEvent e)  {
-        things.add(new Bullet(this,mouseX, PlayerShipY-15,
-                10, 10, 0, -25, 0, Color.CYAN, "bullet"));
+
     }
 
     @Override
@@ -150,6 +160,9 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             firePressed = true;
         }
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            System.exit(0);
+        }
     }
 
     @Override
@@ -161,9 +174,7 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
         if (key == KeyEvent.VK_SPACE) {
             firePressed = false;
         }
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            System.exit(0);
-        }
+
 
 
     }
