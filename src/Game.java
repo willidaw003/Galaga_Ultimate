@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.awt.event.ActionListener;
 
 /**
  * Created by willidaw003 on 2/28/2017.
@@ -11,16 +11,10 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     Timer timer;
     ArrayList<Entity> things;
-    int PlayerShipX = 695;
     int PlayerShipY = 720;
     int mouseX, mouseY;
-    boolean upPressed, downPressed, tabPressed;
+    boolean upPressed, downPressed, tabPressed,firePressed;
 
-    public static void main(String[] args) {
-        Game game = new Game();
-        game.init();
-        game.run();
-    }
 
     public Game() {
         //step 1, create a frame
@@ -40,6 +34,12 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
         frame.setLocationRelativeTo(null);
     }
 
+    public static void main(String[] args) {
+        Game game = new Game();
+        game.init();
+        game.run();
+    }
+
     public void init() {
         things = new ArrayList<>();
         things.add(new PlayerShip(this, mouseX, PlayerShipY, 25, 25, 20, 0, 50, Color.GREEN, "playerShip"));
@@ -49,7 +49,11 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
                         "invader"));
             }
         }
+
     }
+
+
+
 
     public void run() {
 
@@ -83,13 +87,16 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
                        things.remove(i);
                         for (i = 0; i < things.size(); i++) {
                             if (things.get(i).getType().equals("bullet")) {
-                                 things.remove(i);
+                                things.remove(i);
                             }
                         }
                     }
                 }
             }
         }
+
+        System.out.println(firePressed);
+
         for (int i = 0; i < things.size(); i++) {
                 things.get(i).move(things);
             }
@@ -114,14 +121,16 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        things.add(new Bullet(this,e.getX() , PlayerShipY-15,
-                10, 10, 0, -25, 0, Color.CYAN, "bullet"));
+
     }
 
     @Override
     public void mousePressed(MouseEvent e) {}
 
-    public void mouseReleased(MouseEvent e)  {}
+    public void mouseReleased(MouseEvent e)  {
+        things.add(new Bullet(this,mouseX, PlayerShipY-15,
+                10, 10, 0, -25, 0, Color.CYAN, "bullet"));
+    }
 
     @Override
     public void mouseEntered(MouseEvent e) {}
@@ -130,20 +139,33 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
     public void mouseExited(MouseEvent e) {}
 
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 
     @Override
     public void keyPressed(KeyEvent e) {
         if(e.getKeyCode() == KeyEvent.VK_UP) {upPressed = true;}
         if(e.getKeyCode() == KeyEvent.VK_DOWN) {downPressed = true;}
         if(e.getKeyCode() == KeyEvent.VK_TAB) {tabPressed = true;}
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            firePressed = true;
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_UP) {upPressed = false;}
-        if(e.getKeyCode() == KeyEvent.VK_DOWN) {downPressed = false;}
-        if(e.getKeyCode() == KeyEvent.VK_TAB) {tabPressed = false;}
+        int key = e.getKeyCode();
+        if(key == KeyEvent.VK_UP) {upPressed = false;}
+        if( key == KeyEvent.VK_DOWN) {downPressed = false;}
+        if(key == KeyEvent.VK_TAB) {tabPressed = false;}
+        if (key == KeyEvent.VK_SPACE) {
+            firePressed = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            System.exit(0);
+        }
+
+
     }
 
     public boolean isUpPressed() {

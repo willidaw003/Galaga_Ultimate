@@ -31,6 +31,9 @@ public abstract class Entity {
         double ry = mouseY - y;
         double dx = rx;
         x = x + dx;
+        if ((game.things.get(0).getX() > 1300)) {
+            x = 1300;
+        }
     }
 
     public void move(ArrayList<Entity> things) {
@@ -43,6 +46,9 @@ public abstract class Entity {
                 y += 50;
 
             }
+
+
+
             for(int i = 0; i < things.size();i++) {
                 if (nextRight + width > game.getWidth() && things.get(i).getType().equals("PlayerShip")) {
                     this.x = game.getWidth();
